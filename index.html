@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6</title>
+</head>
+<body>
+    <script>
+        
+        const toDoList = {
+            _notes: [],
+
+            createNote(text, id = Date.now()) {
+                const newNote = {
+                    text,
+                    id,                    
+                    status: false,
+                };
+
+                this._notes.push(newNote);
+
+                return newNote;
+            },
+
+            deleteNote(id, confirm) {
+                const index = this._findNoteByID(id);
+
+                if (index >= 0 && typeof confirm === 'function' && confirm) {
+                    return this._notes.splice(index, 1);
+                }
+            },
+
+            editNote(id, editedText, confirm) {
+                const index = this._findNoteByID(id);
+
+                if (index >= 0 && editedText && typeof confirm === 'function' && confirm) {
+                    this._notes[index].text = editedText;
+                }
+                
+                return this._notes[index];
+            },
+
+            changeStatus(id) {
+                const index = this._findNoteByID(id);
+
+                if (index >= 0) {
+                    this._notes[index].status = true;
+                }
+
+                return this._notes[index];
+            },
+
+            _findNoteByID (id) {
+                return this._notes.findIndex((note) => note.id === id);
+            },
+
+            getStatistic() {
+                return this._notes.reduce((a, note) => {
+                    if (note.status === true) {
+                        a.completed ++;
+                    } else {
+                        a.uncompleted ++;
+                    }
+                }, {
+                    completed: 0,
+                    uncopmleted: 0,
+                })
+            }
+        };
+
+        Object.freeze(toDoList);
+
+        toDoList.createNote('drink some tea', 12);
+        toDoList.createNote('make my homework', 13);
+        toDoList.createNote('relax', 14);
+        toDoList.createNote('earn money', 15);
+        toDoList.editNote(15, 'spend money', () => confirm('Are you sure?'))
+        
+    </script>
+</body>
+</html>
