@@ -18,13 +18,11 @@
                     status: false,
                 };
 
-                if (this._notes.find((note) => note.text === text)) {
-                    console.log('Such note already exists!');
-                } else
-                
-                this._notes.push(newNote);
+                if (this._checkTextUniqueness(text)) {                
+                    this._notes.push(newNote);
 
-                return newNote;
+                    return newNote;
+                }
             },
 
             deleteNote(id, confirm) {
@@ -35,18 +33,16 @@
                 }
             },
 
-            editNote(id, editedText, confirm) {
-                if (this._notes.find((note) => note.text === editedText)) {
-                    console.log('Such note already exists!');
-                } else
+            editNote(id, text, confirm) {
+                if (this._checkTextUniqueness(text)) {
+                    const index = this._findNoteByID(id);
 
-                const index = this._findNoteByID(id);
-
-                if (index >= 0 && editedText && typeof confirm === 'function' && confirm()) {
-                    this._notes[index].text = editedText;
+                    if (index >= 0 && text && typeof confirm === 'function' && confirm()) {
+                        this._notes[index].text = text;
+                    }
+                    
+                    return this._notes[index];
                 }
-                
-                return this._notes[index];
             },
 
             changeStatus(id) {
@@ -59,22 +55,22 @@
                 return this._notes[index];
             },
 
-            _findNoteByID (id) {
+            _findNoteByID(id) {
                 return this._notes.findIndex((note) => note.id === id);
+            },
+
+            _checkTextUniqueness(text) {
+                if (this._notes.find((note) => note.text === text)) {
+                    console.log('Such note already exists!');
+                } else return true;
             },
 
             getStatistic() {
                 const statistic = {
                     all: this._notes.length,
+                    completed: this._notes.filter( (note) => (note.status) ? true : false ).length,                          
                 }
-                statistic.completed = this._notes.reduce((acc, note) => {
-                    if (note.status) {
-                        acc ++;
-                    }
 
-                    return acc;
-                }, 0);
-                
                 statistic.uncopmleted = statistic.all - statistic.copmleted;
 
                 return statistic;
@@ -88,7 +84,7 @@
         toDoList.createNote('relax', 14);
         toDoList.changeStatus(12);
         toDoList.createNote('earn money', 15);
-        // toDoList.editNote(15, 'spend money', () => confirm('Are you sure?'))
+        toDoList.editNote(15, 'earn money', () => confirm('Are you sure?'))
         
     </script>
 </body>
